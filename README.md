@@ -11,3 +11,6 @@ I have used Moq to mock the repository in the sample project so that it just val
 Why not xUnit?
 xUnit is an excellent choice but does not have AssemblyInitialize like MS Test. AssemblyInitialize is a nice place to put all initalization logic for your test cases.
 
+# New Commit
+Don't know how the test project was missed. Adding it again.
+Also, added OpenCover to check code coverage. Run "DotNetCoreApiMsTest\SampleDotNetCoreApiTest\TestRunner2.cmd" from command prompt to check code coverage of your test cases.
