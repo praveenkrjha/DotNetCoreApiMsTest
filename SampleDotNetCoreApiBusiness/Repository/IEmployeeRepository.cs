@@ -1,14 +1,15 @@
 ﻿using SampleDotNetCoreApiBusiness.Entities;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SampleDotNetCoreApiBusiness.Repository
 {
     public interface IEmployeeRepository
     {
-        List<Employee> GetEmployees();
+        Task<List<Employee>> GetEmployees();
 
-        Employee GetEmployee(int empId);
+        Task<Employee> GetEmployee(int empId);
 
-        bool AddEmployee(Employee emp);
+        Task<int> AddEmployee(Employee emp);
     }
 }

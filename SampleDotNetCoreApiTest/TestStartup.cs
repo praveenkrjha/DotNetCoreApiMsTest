@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using AutofacSerilogIntegration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Autofac;
-using Microsoft.AspNetCore.Http;
-using System.Reflection;
-using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.Extensions.PlatformAbstractions;
-using Autofac.Extensions.DependencyInjection;
 using Serilog;
-using AutofacSerilogIntegration;
+using Swashbuckle.AspNetCore.Swagger;
+using System;
+using System.Reflection;
 
-namespace SampleDotNetCoreApi
+namespace SampleDotNetCoreApiTest
 {
-    public class Startup
+    public class TestStartup
     {
-        public Startup(IHostingEnvironment env)
+        public TestStartup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -45,7 +42,7 @@ namespace SampleDotNetCoreApi
             // Add framework services.
             services.AddMvc();
             services.AddCors();
-            
+
             services.AddOptions();
 
             // Register the Swagger generator, defining one or more Swagger documents
@@ -62,7 +59,10 @@ namespace SampleDotNetCoreApi
             builder.RegisterType<HttpContextAccessor>().As<IHttpContextAccessor>().SingleInstance();
 
             builder.RegisterAssemblyTypes(Assembly.Load(new AssemblyName("SampleDotNetCoreApiBusiness"))).Where(t => t.Name.EndsWith("Manager")).AsImplementedInterfaces().SingleInstance();
-            builder.RegisterAssemblyTypes(Assembly.Load(new AssemblyName("SampleDotNetCoreApiBusiness"))).Where(t => t.Name.EndsWith("Repository")).AsImplementedInterfaces().SingleInstance();
+            //builder.RegisterAssemblyTypes(Assembly.Load(new AssemblyName("SampleDotNetCoreApiBusiness"))).Where(t => t.Name.EndsWith("Repository")).AsImplementedInterfaces().SingleInstance();
+
+            //Mock your repositories.
+            TestInitializer.RegisterMockRepositories(services);
 
             //Register logger
             builder.RegisterLogger();

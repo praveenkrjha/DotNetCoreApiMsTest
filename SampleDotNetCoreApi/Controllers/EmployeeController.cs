@@ -3,42 +3,74 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SampleDotNetCoreApiBusiness.Manager;
+using SampleDotNetCoreApiBusiness.Entities;
+using System.Net;
+using Serilog;
 
 namespace SampleDotNetCoreApi.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    /// SampleDotNetCoreApi.Controllers.EmployeeController class for employee controller
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
+    [Produces("application/json")]
     public class EmployeeController : Controller
     {
-        // GET api/values
+        private readonly ILogger _logger;
+        private readonly IEmployeeManager _employeeManager;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmployeeController"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        /// <param name="employeeManager">The employee manager.</param>
+        public EmployeeController(ILogger logger, IEmployeeManager employeeManager)
+        {
+            _logger = logger;
+            _employeeManager = employeeManager;
+        }
+
+        /// <summary>
+        /// Gets the employees.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        public IEnumerable<string> Get()
+        [Route("api/Employees")]
+        [ProducesResponseType(typeof(IEnumerable<Employee>), (int)HttpStatusCode.OK)]
+        public IActionResult GetEmployees()
         {
-            return new string[] { "value1", "value2" };
+            var employees =  _employeeManager.GetEmployees().Result;
+            return Ok(employees);
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        /// <summary>
+        /// Gets the employee.
+        /// </summary>
+        /// <param name="empId">The emp identifier.</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("api/Employee")]
+        [ProducesResponseType(typeof(Employee), (int)HttpStatusCode.OK)]
+        public IActionResult GetEmployee([FromQuery] int empId)
         {
-            return "value";
+            var employee = _employeeManager.GetEmployee(empId).Result;
+            return Ok(employee);
         }
 
-        // POST api/values
+
+        /// <summary>
+        /// Posts the specified emp.
+        /// </summary>
+        /// <param name="emp">The emp.</param>
+        /// <returns></returns>
         [HttpPost]
-        public void Post([FromBody]string value)
+        [Route("api/Employee")]
+        [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
+        public IActionResult CreateEmployee([FromBody]Employee emp)
         {
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var status = _employeeManager.AddEmployee(emp).Result;
+            return Ok(status);
         }
     }
 }

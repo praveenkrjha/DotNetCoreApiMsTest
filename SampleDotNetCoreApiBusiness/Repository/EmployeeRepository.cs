@@ -2,24 +2,75 @@
 using System.Collections.Generic;
 using System.Text;
 using SampleDotNetCoreApiBusiness.Entities;
+using Dapper;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Threading.Tasks;
+using Serilog;
 
 namespace SampleDotNetCoreApiBusiness.Repository
 {
     public class EmployeeRepository : IEmployeeRepository
     {
-        public bool AddEmployee(Employee emp)
+        private const string DbConnectionStr = "Data Source=(local);Initial Catalog=SampleDB;Integrated Security=SSPI;Max Pool size = 100;";
+
+        private readonly ILogger _logger;
+
+        public EmployeeRepository(ILogger logger)
         {
-            throw new NotImplementedException();
+            _logger = logger;
         }
 
-        public Employee GetEmployee(int empId)
+        public async Task<int> AddEmployee(Employee emp)
         {
-            throw new NotImplementedException();
+            using (var con = new SqlConnection(DbConnectionStr))
+            {
+                con.Open();
+                var success = await con.ExecuteAsync("Insert into Employee (FirstName, LastName, Email) values (@FirstName,@LastName,@Email)", emp, commandType: CommandType.Text);
+                return success;
+            }
         }
 
-        public List<Employee> GetEmployees()
+        public async Task<Employee> GetEmployee(int empId)
         {
-            throw new NotImplementedException();
+            using (var con = new SqlConnection(DbConnectionStr))
+            {
+                con.Open();
+
+                var data = (await con.QueryAsync<dynamic>("Select * from Employee where Id=@Id", new { Id = empId }, commandType: CommandType.Text)).Select(x => new Employee
+                {
+                    EmpId = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Email = x.Email,
+                }).FirstOrDefault();
+                return data;
+            }
+        }
+
+        public async Task<List<Employee>> GetEmployees()
+        {
+            using (var con = new SqlConnection(DbConnectionStr))
+            {
+                con.Open();
+                IEnumerable<Employee> data = null;
+                try
+                {
+                    data = (await con.QueryAsync<dynamic>("Select * from Employee", commandType: CommandType.Text)).Select(x => new Employee
+                    {
+                        EmpId = x.Id,
+                        FirstName = x.FirstName,
+                        LastName = x.LastName,
+                        Email = x.Email,
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error("Error : {ex}", ex);
+                }
+                return data.ToList();
+            }
         }
     }
 }

@@ -1,25 +1,32 @@
-﻿using System;
+﻿using SampleDotNetCoreApiBusiness.Entities;
+using SampleDotNetCoreApiBusiness.Repository;
 using System.Collections.Generic;
-using System.Text;
-using SampleDotNetCoreApiBusiness.Entities;
+using System.Threading.Tasks;
 
 namespace SampleDotNetCoreApiBusiness.Manager
 {
     public class EmployeeManager : IEmployeeManager
     {
-        public bool AddEmployee(Employee emp)
+        private readonly IEmployeeRepository _employeeRepository;
+
+        public EmployeeManager(IEmployeeRepository employeeRepository)
         {
-            throw new NotImplementedException();
+            _employeeRepository = employeeRepository;
         }
 
-        public Employee GetEmployee(int empId)
+        public async Task<int> AddEmployee(Employee emp)
         {
-            throw new NotImplementedException();
+            return await _employeeRepository.AddEmployee(emp);
         }
 
-        public List<Employee> GetEmployees()
+        public async Task<Employee> GetEmployee(int empId)
         {
-            throw new NotImplementedException();
+            return await _employeeRepository.GetEmployee(empId);
+        }
+
+        public async Task<IEnumerable<Employee>> GetEmployees()
+        {
+            return await _employeeRepository.GetEmployees();
         }
     }
 }
