@@ -14,3 +14,6 @@ xUnit is an excellent choice but does not have AssemblyInitialize like MS Test. 
 # New Commit
 Don't know how the test project was missed. Adding it again.
 Also, added OpenCover to check code coverage. Run "DotNetCoreApiMsTest\SampleDotNetCoreApiTest\TestRunner2.cmd" from command prompt to check code coverage of your test cases.
+
+# New Features
+- Bug Fixes
